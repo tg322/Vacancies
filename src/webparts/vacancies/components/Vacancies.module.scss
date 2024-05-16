@@ -1,0 +1,23 @@
+@import '~@fluentui/react/dist/sass/References.scss';
+
+.vacancies {
+  overflow:hidden;
+  display:flex;
+}
+
+
+
+:global {
+  .CanvasComponent.LCS .CanvasZone {
+  
+    max-width: 100% !important;
+    
+    }
+    
+    #workbenchPageContent {
+    
+    max-width: 100% !important;
+    
+    }
+    
+   }

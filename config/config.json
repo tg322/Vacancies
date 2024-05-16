@@ -1,0 +1,18 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/config.2.0.schema.json",
+  "version": "2.0",
+  "bundles": {
+    "vacancies-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/vacancies/VacanciesWebPart.js",
+          "manifest": "./src/webparts/vacancies/VacanciesWebPart.manifest.json"
+        }
+      ]
+    }
+  },
+  "externals": {},
+  "localizedResources": {
+    "VacanciesWebPartStrings": "lib/webparts/vacancies/loc/{locale}.js"
+  }
+}

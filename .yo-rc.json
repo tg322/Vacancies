@@ -1,0 +1,21 @@
+{
+  "@microsoft/generator-sharepoint": {
+    "plusBeta": false,
+    "isCreatingSolution": true,
+    "nodeVersion": "18.18.2",
+    "sdksVersions": {
+      "@microsoft/microsoft-graph-client": "3.0.2",
+      "@microsoft/teams-js": "2.12.0"
+    },
+    "version": "1.18.1",
+    "libraryName": "vacancies",
+    "libraryId": "66d804a9-9c55-4652-912c-9abd00be13cc",
+    "environment": "spo",
+    "packageManager": "npm",
+    "solutionName": "vacancies",
+    "solutionShortDescription": "vacancies description",
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "componentType": "webpart"
+  }
+}

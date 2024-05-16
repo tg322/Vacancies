@@ -1,0 +1,40 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "vacancies-client-side-solution",
+    "id": "66d804a9-9c55-4652-912c-9abd00be13cc",
+    "version": "1.0.0.0",
+    "includeClientSideAssets": true,
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "developer": {
+      "name": "",
+      "websiteUrl": "",
+      "privacyUrl": "",
+      "termsOfUseUrl": "",
+      "mpnId": "Undefined-1.18.1"
+    },
+    "metadata": {
+      "shortDescription": {
+        "default": "vacancies description"
+      },
+      "longDescription": {
+        "default": "vacancies description"
+      },
+      "screenshotPaths": [],
+      "videoUrl": "",
+      "categories": []
+    },
+    "features": [
+      {
+        "title": "vacancies Feature",
+        "description": "The feature that activates elements of the vacancies solution.",
+        "id": "91eb2fbd-3773-4a60-85b0-0f7ac30431c6",
+        "version": "1.0.0.0"
+      }
+    ]
+  },
+  "paths": {
+    "zippedPackage": "solution/vacancies.sppkg"
+  }
+}

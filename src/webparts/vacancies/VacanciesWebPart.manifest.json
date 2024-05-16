@@ -1,0 +1,25 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx/client-side-web-part-manifest.schema.json",
+  "id": "f1872c9c-8896-446f-90b7-ba373b85c073",
+  "alias": "VacanciesWebPart",
+  "componentType": "WebPart",
+
+  "version": "*",
+  "manifestVersion": 2,
+
+  "requiresCustomScript": false,
+  "supportedHosts": ["SharePointWebPart", "TeamsPersonalApp", "TeamsTab", "SharePointFullPage"],
+  "supportsThemeVariants": true,
+  "supportsFullBleed": true,
+
+  "preconfiguredEntries": [{
+    "groupId": "5c03119e-3074-46fd-976b-c60198311f70",
+    "group": { "default": "Advanced" },
+    "title": { "default": "Vacancies" },
+    "description": { "default": "Vacancies description" },
+    "officeFabricIconFontName": "Page",
+    "properties": {
+      "description": "Vacancies"
+    }
+  }]
+}
