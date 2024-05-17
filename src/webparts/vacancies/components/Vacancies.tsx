@@ -57,21 +57,20 @@ function Recruitment(props: IVacanciesProps){
 //   }, []);
 
   return (
-    <main className={styles.vacancies} style={{flexDirection:'row', height:'85vh', width:'100%', position:'relative', border:'solid 1px gray'}}>
+    <NavigationProvider>
+      <main className={styles.vacancies} style={{flexDirection:'row', height:'85vh', width:'100%', position:'relative', border:'solid 1px gray'}}>
 
-      <NavigationProvider>
+        <SideBar/>
 
-      <SideBar/>
-
-      <CentreDisplay>
-        <TopNav/>
-        <ContentScreen>
-          <VacancyDisplay context={props.context}/>
-        </ContentScreen>
-      </CentreDisplay>
-
-      </NavigationProvider>
-    </main>
+        <CentreDisplay>
+          <TopNav/>
+          <ContentScreen>
+            <VacancyDisplay context={props.context}/>
+          </ContentScreen>
+        </CentreDisplay>
+        
+      </main>
+    </NavigationProvider>
   );
 
 }

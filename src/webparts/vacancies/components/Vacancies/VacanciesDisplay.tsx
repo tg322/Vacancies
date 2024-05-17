@@ -53,7 +53,7 @@ function VacancyDisplay(props: IVacancyDisplayProps){
     }, []);
 
     return(
-        <div id='center-display' style={{display:'flex', flexDirection:'column', gap:'20px'}}>
+        <div id='center-display' style={{display:'flex', flexDirection:'column', gap:'20px', maxWidth:'800px'}}>
             {vacancyDetails.length > 0 &&
                 vacancyDetails.map((singleVacancy) => (
                     <div style={{ display: 'flex', flexDirection: 'column', boxSizing: 'border-box', padding: '10px', border: '1px solid black' }} key={singleVacancy.uniqueId}>

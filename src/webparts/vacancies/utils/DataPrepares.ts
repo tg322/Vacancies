@@ -57,8 +57,19 @@ export class PreparedData {
     
                 }
             }
+
+            const dateObject = new Date(singleVacancy.ListItemAllFields.ClosingDate);
+
+            const yyyy = dateObject.getFullYear();
+            let mm = dateObject.getMonth() + 1; // Months start at 0!
+            let dd = dateObject.getDate();
+
+            if (dd < 10) dd = 0 + dd;
+            if (mm < 10) mm = 0 + mm;
+
+            const formattedDateObject = dd + '/' + mm + '/' + yyyy;
             
-            preparedVacancies.push(new vacancy(singleVacancy.UniqueId, singleVacancy.Name.slice(0,singleVacancy.Name.indexOf('-')), singleVacancy.ListItemAllFields.ClosingDate, singleVacancy.ItemCount, notify))
+            preparedVacancies.push(new vacancy(singleVacancy.UniqueId, singleVacancy.Name.slice(0,singleVacancy.Name.indexOf('-')), formattedDateObject, singleVacancy.ItemCount, notify))
         });
 
         // console.log(preparedVacancies);
