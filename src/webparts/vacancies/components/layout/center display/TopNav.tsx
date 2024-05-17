@@ -3,13 +3,13 @@ import { useNavigationContext } from '../../context providers/NavigationContextP
 
 function TopNav(){
 
-    const { path } = useNavigationContext();
+    const { state } = useNavigationContext();
 
-    console.log(path);
+    
 
     return(
         <div id='nav' style={{display:'flex', flexDirection:'row', height:'60px', width:'100%', boxSizing:'border-box', padding:'10px', alignItems:'center'}}>
-            <h3 style={{margin:'0px', fontWeight:'600'}}>{path}</h3>
+            <h3 style={{margin:'0px', fontWeight:'600'}}>{state.path}</h3>
         </div>
     );
 

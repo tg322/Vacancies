@@ -1,7 +1,7 @@
 import * as React from 'react';
 import styles from './SideBar.module.scss';
 import SideBarButton from './SideBarButton';
-import { ArchiveFilled, FolderBriefcaseFilled, DocumentBriefcaseFilled } from '@fluentui/react-icons';
+import { ArchiveFilled, FolderBriefcaseFilled, DocumentPersonFilled } from '@fluentui/react-icons';
 import ButtonGroupContainer from './ButtonGroupContainer';
 
 function SideBar(){
@@ -15,7 +15,7 @@ function SideBar(){
             <ButtonGroupContainer>
                 <SideBarButton title='Vacancies' icon={<FolderBriefcaseFilled />} id='Vacancies' />
                 <SideBarButton title='Archive' icon={<ArchiveFilled/>} id='Archive' />
-                <SideBarButton title='Held on File' icon={<DocumentBriefcaseFilled/>} id='Held on File' />
+                <SideBarButton title='Held on File' icon={<DocumentPersonFilled/>} id='Held on File' />
             </ButtonGroupContainer>
             
 

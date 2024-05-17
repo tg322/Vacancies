@@ -1,6 +1,6 @@
 import { SPHttpClient, SPHttpClientResponse } from "@microsoft/sp-http";
 
-interface BuildResponseType {
+export interface BuildResponseType {
     success: boolean;
     message: string;
     data?: any; 
@@ -315,5 +315,117 @@ export class DataHandler {
             reader.readAsArrayBuffer(file);
         });
     }
+
+
+    async getSPList(context:any): Promise<BuildResponseType> {
+        const formDigestValueResponse = await this.getFormDigestValue(context, context.pageContext.web.absoluteUrl); //changed this, need to think about the whole url location thing, its not very good.
+        return new Promise(async (resolve, reject) => { 
+            
+    
+            if(!formDigestValueResponse.success){
+                return formDigestValueResponse
+            }
+    
+                try{
+                    const url = `${context.pageContext.web.absoluteUrl}/_api/lists/getById('680f884b-051a-4017-9294-38a4764a5643')/fields?$filter=EntityPropertyName eq 'FileType'`;
+                    const headers = {
+                        'Content-Type': 'application/json;odata=verbose',
+                        'X-RequestDigest': formDigestValueResponse.data
+                    };
+    
+                    context.spHttpClient.get(url, SPHttpClient.configurations.v1, {
+                        headers: headers
+                    })
+                    .then((response: SPHttpClientResponse) => {
+                      if(response.ok) {
+                        response.json().then((listData: any) => {
+                            resolve(this.buildResponse(true, 'List data retrieved successfully.', listData));
+                        });
+                      }
+                      else {
+                        resolve(this.buildResponse(false, 'List data could not be retrieved.', '', response.statusText));
+                      }
+                    });
+                }catch(error){
+                    reject(this.buildResponse(false, 'An error occured', '', error));
+                } 
+        });
+
+    }
+
+// /sites/Staff/Recruitment/Applications
+    async getFoldersFromSP(context: any, libraryLocation:string): Promise<BuildResponseType> {
+        const formDigestValueResponse = await this.getFormDigestValue(context, context.pageContext.web.absoluteUrl);
+
+
+        return new Promise(async (resolve, reject) => { 
+            
+    
+            if(!formDigestValueResponse.success){
+                return formDigestValueResponse
+            }
+    
+                try{
+                    const url = `${context.pageContext.web.absoluteUrl}/_api/web/getfolderbyserverrelativeurl('${libraryLocation}')/folders?$filter=Name ne 'Forms'&$expand=listItemAllFields`;
+                    const headers = {
+                        'Content-Type': 'application/json;odata=verbose',
+                        'X-RequestDigest': formDigestValueResponse.data
+                    };
+    
+                    context.spHttpClient.get(url, SPHttpClient.configurations.v1, {
+                        headers: headers
+                    })
+                    .then((response: SPHttpClientResponse) => {
+                      if(response.ok) {
+                        response.json().then((folders: any) => {
+                            resolve(this.buildResponse(true, 'Folders Retrieved', folders));
+                        });
+                      }
+                      else {
+                        resolve(this.buildResponse(false, 'Folders could not be retrieved.', '', response.statusText));
+                      }
+                    });
+                }catch(error){
+                    reject(this.buildResponse(false, 'An error occured.', '', error));
+                } 
+        });
+      
+      }
+
+
+      async getUserBySpId(context: any, id:any): Promise<BuildResponseType> {
+        const formDigestValueResponse = await this.getFormDigestValue(context, context.pageContext.web.absoluteUrl);
+        return new Promise(async (resolve, reject) => { 
+            if(!formDigestValueResponse.success){
+                return formDigestValueResponse
+            }
+            try{
+                const url = `${context.pageContext.web.absoluteUrl}/_api/web/siteusers/getbyid(${id})`;
+                const headers = {
+                    'Content-Type': 'application/json;odata=verbose',
+                    'X-RequestDigest': formDigestValueResponse.data
+                };
+
+                context.spHttpClient.get(url, SPHttpClient.configurations.v1, {
+                    headers: headers
+                })
+                .then((response: SPHttpClientResponse) => {
+                    if(response.ok) {
+                    response.json().then((user: any) => {
+                        resolve(this.buildResponse(true, 'User Retrieved', user));
+                    });
+                    }
+                    else {
+                    resolve(this.buildResponse(false, 'User could not be retrieved.', '', response.statusText));
+                    }
+                });
+            }catch(error){
+                reject(this.buildResponse(false, 'An error occured.', '', error));
+            } 
+        });
+      }
+
+
+
     
 }

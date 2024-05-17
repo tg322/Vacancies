@@ -1,52 +1,69 @@
-// MyContext.tsx
+// NavigationContextProvider.tsx
 import * as React from 'react';
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useReducer } from 'react';
 
-// Define the shape of the context data
-interface NavigationContextProps {
-  path: Array<string>;
-  addToPath: (pathToAdd: string) => void;
-  removeFromPath: (pathToRemove: string) => void;
-  resetPath: () => void;
+//Define the interface for the useReducer, this is the state value so whatever you intend to put inside it will be the type, using a string array here.
+
+interface NavigationState {
+  path: string[];
+}
+
+//The actions to be run, this still confuses me.
+
+type Action =
+  | { type: 'ADD_TO_PATH'; payload: string }
+  | { type: 'REMOVE_FROM_PATH'; payload: string }
+  | { type: 'RESET_AND_ADD_TO_PATH'; payload: string };
+
+const initialState: NavigationState = { path: ['Vacancies'] };
+
+
+//Create the reducer function (I hate all the const functions wtf is this all about.)
+const navigationReducer = (state: NavigationState, action: Action): NavigationState => {
+
+//Switch statement for actions and their... actions?
+    switch (action.type) {
+        case 'ADD_TO_PATH':
+            return { ...state, path: [...state.path, action.payload] };
+        case 'REMOVE_FROM_PATH':
+            return { ...state, path: state.path.filter((item) => item !== action.payload) };
+        case 'RESET_AND_ADD_TO_PATH':
+            return { ...state, path: [action.payload] };
+        default:
+            return state;
+    }
+};
+
+//Create the context function (Another one...)
+const NavigationContext = createContext<{
+    state: NavigationState;
+    dispatch: React.Dispatch<Action>;
+  } | undefined>(undefined);
   
-}
+//Create the context instance
 
-// Create the context with default values
-const NavigationContext = createContext<NavigationContextProps | undefined>(undefined);
+  export const useNavigationContext = () => {
+    const context = useContext(NavigationContext);
+    if (!context) {
+      throw new Error('useNavigationContext must be used within a NavigationProvider');
+    }
+    return context;
+  };
 
-// Create a custom hook to use the MyContext
-export const useNavigationContext = () => {
-  const context = useContext(NavigationContext);
-  if (!context) {
-    throw new Error('useMyContext must be used within a MyProvider');
-  }
-  return context;
-};
-
-// Define the provider's props
-interface NavigationProviderProps {
-  children: React.ReactNode;
-}
-
-// Create the provider component
-export const NavigationProvider: React.FC<NavigationProviderProps> = ({ children }) => {
-  const [path, setPath] = useState<Array<string>>([]);
-
-  function addToPath(pathToAdd:string){
-    setPath([...path, pathToAdd]);
+  //Interface to give children a type of ReactNode (A JSX component) as any will cause sticky bugs later down the line.
+  
+  interface NavigationProviderProps {
+    children: React.ReactNode;
   }
 
-  function removeFromPath(pathToRemove:string){
-    setPath((prevPath) => prevPath.filter((i) => i !== pathToRemove));
-  }
-
-  function resetPath(){
-    setPath([]);
-  }
-
-  return (
-    <NavigationContext.Provider value={{ path, addToPath, removeFromPath, resetPath }}>
-      {children}
-    </NavigationContext.Provider>
-  );
-};
+  //Create the localised context wrapper (All components wrapped by this component can access the context.)
+  export const NavigationProvider: React.FC<NavigationProviderProps> = ({ children }) => {
+    const [state, dispatch] = useReducer(navigationReducer, initialState);
+  
+    return (
+      <NavigationContext.Provider value={{ state, dispatch }}>
+        {children}
+      </NavigationContext.Provider>
+    );
+  };
+  

@@ -1,3 +1,4 @@
+// import { useNavigationContext } from "../../context providers/NavigationContextProviderOld";
 import { useNavigationContext } from "../../context providers/NavigationContextProvider";
 import { IButtonProps } from "./ISideBarInterfaces";
 import styles from './SideBar.module.scss';
@@ -5,15 +6,23 @@ import * as React from 'react';
 
 function SideBarButton(props: IButtonProps){
 
-    const {path, resetPath, addToPath } = useNavigationContext();
+    const { state, dispatch } = useNavigationContext();
 
-    function handlePaths(){
-        resetPath();
-        addToPath(props.id);
+    // function handlePaths(){
+    //     resetPath();
+    //     addToPath(props.id);
+    // }
+
+    function handleClick() {
+        
+        dispatch({ type: 'RESET_AND_ADD_TO_PATH', payload: props.id});
+        console.log(state.path);
     }
+    
+    
 
     return(
-        <div className={ `${props.isActive ? styles.buttonContainerClicked : styles.buttonContainer}`} onClick={() => handlePaths() }>
+        <div className={ `${props.isActive ? styles.buttonContainerClicked : styles.buttonContainer}`} onClick={() => handleClick()}>
             {props.icon}
             <span style={{fontWeight:'600', margin:'0px', height:'fit-content', userSelect:'none'}}>{props.title}</span>
         </div>
