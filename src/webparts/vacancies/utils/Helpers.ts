@@ -366,7 +366,7 @@ export class DataHandler {
             }
     
                 try{
-                    const url = `${context.pageContext.web.absoluteUrl}/_api/web/getfolderbyserverrelativeurl('${libraryLocation}')/folders?$filter=Name ne 'Forms'&$expand=listItemAllFields`;
+                    const url = `${context.pageContext.web.absoluteUrl}/_api/web/getfolderbyserverrelativeurl('${libraryLocation}')/folders?$filter=Name ne 'Forms'&$expand=ListItemAllFields&$select=Name,UniqueId,ItemCount`;
                     const headers = {
                         'Content-Type': 'application/json;odata=verbose',
                         'X-RequestDigest': formDigestValueResponse.data

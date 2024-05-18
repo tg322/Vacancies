@@ -8,7 +8,7 @@ import {
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 
 import * as strings from 'VacanciesWebPartStrings';
-import Vacancies from './components/Vacancies';
+import Recruitment from './components/Recruitment';
 import { IVacanciesProps } from './components/IVacanciesProps';
 import { DataHandler } from './utils/Helpers';
 
@@ -24,7 +24,7 @@ public dataHandler = new DataHandler();
 
   public render(): void {
     const element: React.ReactElement<IVacanciesProps> = React.createElement(
-      Vacancies,
+      Recruitment,
       {
         context: this.context
       }

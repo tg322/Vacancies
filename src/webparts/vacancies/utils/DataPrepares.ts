@@ -1,17 +1,5 @@
+import { INotifyProps, IVacancyProps } from "../components/Vacancies/IVacancyProps";
 import { DataHandler } from "./Helpers";
-
-interface INotifyProps{
-    name: string;
-    email: string;
-}
-
-export interface IVacancyProps{
-    uniqueId: number;
-    name:string;
-    closingDate: string;
-    itemCount: number;
-    accessibleTo?: INotifyProps[];
-}
 
 export class vacancy implements IVacancyProps{
     constructor (
@@ -71,10 +59,6 @@ export class PreparedData {
             
             preparedVacancies.push(new vacancy(singleVacancy.UniqueId, singleVacancy.Name.slice(0,singleVacancy.Name.indexOf('-')), formattedDateObject, singleVacancy.ItemCount, notify))
         });
-
-        // console.log(preparedVacancies);
-
-        
 
         return this.dataHandler.buildResponse(true, 'Vacancies prepared successfully', preparedVacancies)
     }
