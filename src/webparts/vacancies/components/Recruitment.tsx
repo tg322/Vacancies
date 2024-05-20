@@ -8,6 +8,7 @@ import TopNav from './layout/center display/TopNav';
 import VacancyDisplay from './Vacancies/VacanciesDisplay';
 import ContentScreen from './layout/center display/ContentScreen';
 import { VacanciesProvider } from './context providers/VacanciesContextProvider';
+import Vacancies from './Vacancies/Vacancies';
 // import { DataHandler } from '../utils/Helpers';
 // import { useEffect } from 'react';
 // import { PreparedData } from '../utils/DataPrepares';
@@ -24,7 +25,9 @@ function Recruitment(props: IVacanciesProps){
           <CentreDisplay>
             <TopNav/>
             <ContentScreen>
-              <VacancyDisplay context={props.context}/>
+              <VacancyDisplay context={props.context}>
+                <Vacancies context={props.context}/>
+              </VacancyDisplay>
             </ContentScreen>
           </CentreDisplay>
           

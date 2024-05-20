@@ -1,21 +1,25 @@
 import * as React from 'react';
 
 import { DataHandler } from '../../utils/Helpers';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 // import { IVacancyProps } from './IVacancyProps';
 import { PreparedData } from '../../utils/DataPrepares';
-import { useVacanciesContext } from '../context providers/VacanciesContextProvider';
-import { IVacancyProps } from './IVacancyProps';
+import { useVacanciesContext } from '../context providers/VacanciesContextProvider'
+import { useNavigationContext } from '../context providers/NavigationContextProvider';
+import Vacancies from './Vacancies';
+
 
 interface IVacancyDisplayProps{
     context: any;
+    children:React.ReactNode;
 }
 
 function VacancyDisplay(props: IVacancyDisplayProps){
 
-    // const[vacancyDetails, setVacancyDetails] = useState<Array<IVacancyProps>>([])
+    const[fetchVacancies, setFetchVacancies] = useState<boolean>(false);
 
-    const { state ,dispatch } = useVacanciesContext();
+    const { vacancyState, vacancyDispatch } = useVacanciesContext();
+    const { state } = useNavigationContext();
 
     const dataHandler = new DataHandler();
 
@@ -23,23 +27,21 @@ function VacancyDisplay(props: IVacancyDisplayProps){
 
     async function getVacancies() {
         try {
-            const vacanciesResponse = await dataHandler.getFoldersFromSP(props.context, '/sites/Staff/Recruitment/Applications');
-
-            if (!vacanciesResponse.success) {
-                throw new Error('Failed to fetch vacancies: ' + JSON.stringify(vacanciesResponse));
-            }
-            console.log(vacanciesResponse.data);
-            const preparedVacanciesResponse = await dataPrepares.prepareVacancies(props.context, vacanciesResponse.data.value);
+            const preparedVacanciesResponse = await dataPrepares.prepareVacancies(props.context);
 
             if (!preparedVacanciesResponse.success) {
                 throw new Error('Failed to prepare vacancies: ' + JSON.stringify(preparedVacanciesResponse));
             }
 
-            dispatch({ type: 'RESET_VACANCIES' });
+            console.log('preparedVacanciesResponse before dispatch:', preparedVacanciesResponse.data);
 
-            preparedVacanciesResponse.data.forEach((vacancy: IVacancyProps) => {
-                dispatch({ type: 'ADD_TO_VACANCIES', payload: vacancy });
-            });
+            vacancyDispatch({ type: 'RESET_VACANCIES' });
+
+            vacancyDispatch({ type: 'BULK_ADD_TO_VACANCIES', payload: preparedVacanciesResponse.data });
+            // preparedVacanciesResponse.data.forEach((vacancy: IVacancyProps) => {
+            //     vacancyDispatch({ type: 'ADD_TO_VACANCIES', payload: vacancy });
+            // });
+            console.log('Vacancy State after dispatch:', vacancyState);
 
         } catch (error) {
             console.error('An error occurred:', error);
@@ -58,27 +60,34 @@ function VacancyDisplay(props: IVacancyDisplayProps){
     }
 
     useEffect(  () => {
-        getVacancyChoices();
-        getVacancies();
-    }, []);
+        if(fetchVacancies){
+            getVacancyChoices();
+            getVacancies();
+        }
+        
+    }, [fetchVacancies]);
+
+    useEffect(() => {
+        if (state.path.indexOf('Vacancies') !=-1 && state.path.length === 1) {
+            setFetchVacancies(true);
+        } else {
+            setFetchVacancies(false);
+        }
+    }, [state.path]);
 
     return(
-        <div id='center-display' style={{display:'flex', flexDirection:'row', gap:'20px', maxWidth:'800px', width:'100%', flexWrap:'wrap', justifyContent:'center'}}>
-            {state.vacancies.length > 0 &&
-                state.vacancies.map((singleVacancy) => (
-                    <div style={{display:'flex', flexDirection:'column', boxSizing: 'border-box', borderRadius:'10px', border:'1px solid lightgray', overflow:'hidden', width:'320px'}} key={singleVacancy.uniqueId}>
-                        <div style={{display:'flex', flexDirection:'column', boxSizing: 'border-box', backgroundColor:'lightsalmon', padding:'10px'}}>
-                            <span style={{fontWeight:'600'}}>{singleVacancy.name}</span>
-                        </div>
-                        <div style={{display:'flex', flexDirection:'column', boxSizing: 'border-box', padding:'10px'}}>
-                            <span>{singleVacancy.uniqueId}</span>
-                            <span>{singleVacancy.accessibleTo?.length}</span>
-                            <span>{singleVacancy.closingDate}</span>
-                            <span>{singleVacancy.itemCount}</span>
-                        </div>
-                    </div>
-                ))
+        <div id='center-display' style={{display:'flex', flexDirection:'row', gap:'20px', width:'100%', flexWrap:'wrap', justifyContent:'center', overflowY:'scroll', overflow:'hidden'}}>
+            {React.Children.map(props.children, (child) => {
+            // If the path is equal to 'Vacancies' and the path array length is 1 e.g only vacancies is in the path array, 
+            //might need to seriously consider what im doing here because this is a very complex solution to a relatively simple problem.
+            //Next: Check if path equals vacancies and then check if the path contains another entry, if so, render the applicant cards and running fetch applicants based off selected vacancy name within path, would be the second entry in the path array.
+            if (React.isValidElement(child) && child.type === Vacancies && state.path.indexOf('Vacancies') !=-1 && state.path.length === 1) {
+                return child;
+            } 
+            else {
+                return null
             }
+        })}
         </div>
     );
 }

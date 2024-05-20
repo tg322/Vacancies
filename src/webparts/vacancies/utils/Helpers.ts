@@ -425,6 +425,38 @@ export class DataHandler {
         });
       }
 
+      async getFilesFromFolder(context:any, linkToFile:string): Promise<BuildResponseType>{
+        const formDigestValueResponse = await this.getFormDigestValue(context, context.pageContext.web.absoluteUrl);
+        return new Promise(async (resolve, reject) => { 
+            if(!formDigestValueResponse.success){
+                return formDigestValueResponse
+            }
+            try{
+                const url = `${context.pageContext.web.absoluteUrl}/_api/${linkToFile}/files?$filter=substringof('.pdf', Name)`;
+                const headers = {
+                    'Content-Type': 'application/json',
+                    'X-RequestDigest': formDigestValueResponse.data
+                }
+
+                context.spHttpClient.get(url, SPHttpClient.configurations.v1, {
+                    headers: headers
+                })
+                .then((response: SPHttpClientResponse) => {
+                    if(response.ok) {
+                    response.json().then((file: any) => {
+                        resolve(this.buildResponse(true, 'File Retrieved', file));
+                    });
+                    }
+                    else {
+                    resolve(this.buildResponse(false, 'File could not be retrieved.', '', response.statusText));
+                    }
+                });
+            }catch(error){
+                reject(this.buildResponse(false, 'An error occured.', '', error));
+            } 
+        });
+      }
+
 
 
     
