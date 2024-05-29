@@ -223,7 +223,7 @@ export class DataHandler {
         }
 
             try{
-                const url = `${urlLocation}/_api/web/getfilebyserverrelativeurl('/${folderLocation}/${fileName}')`;
+                const url = `${urlLocation}/_api/web/getfilebyserverrelativeurl('${folderLocation}/${fileName}')`;
                 const headers = {
                   'Accept': 'application/json;odata=nometadata',
                   'Content-Type': 'application/json;odata=verbose',
@@ -285,7 +285,7 @@ export class DataHandler {
       
             // const url = `${context.pageContext.web.absoluteUrl}/_api/web/getfolderbyserverrelativeurl('/${folderLocation}')/files/add(overwrite=${overwrite}, url='${fileName && fileName? fileName : file.name}')?$expand=listItemAllFields`;
             
-            const url = `${urlLocation}/_api/web/getfolderbyserverrelativeurl('/${folderLocation}')/files/add(overwrite=${overwrite}, url='${fileName && fileName? fileName : file.name}')?$expand=listItemAllFields`;
+            const url = `${urlLocation}/_api/web/getfolderbyserverrelativeurl('${folderLocation}')/files/add(overwrite=${overwrite}, url='${fileName && fileName? fileName : file.name}')?$expand=listItemAllFields`;
 
             const headers = {
               'Accept': 'application/json;odata=nometadata',
@@ -432,7 +432,7 @@ export class DataHandler {
                 return formDigestValueResponse
             }
             try{
-                const url = `${context.pageContext.web.absoluteUrl}/_api/${linkToFile}/files?$filter=substringof('.pdf', Name)`;
+                const url = `${context.pageContext.web.absoluteUrl}/_api/${linkToFile}/files?$filter=substringof('.pdf', Name)&$expand=ListItemAllFields`;
                 const headers = {
                     'Content-Type': 'application/json',
                     'X-RequestDigest': formDigestValueResponse.data
@@ -449,6 +449,42 @@ export class DataHandler {
                     }
                     else {
                     resolve(this.buildResponse(false, 'File could not be retrieved.', '', response.statusText));
+                    }
+                });
+            }catch(error){
+                reject(this.buildResponse(false, 'An error occured.', '', error));
+            } 
+        });
+      }
+
+      async updateListItem(context:any, linkToFile:string, columnName:string, value:any): Promise<BuildResponseType>{
+        const formDigestValueResponse = await this.getFormDigestValue(context, context.pageContext.web.absoluteUrl);
+        return new Promise(async (resolve, reject) => { 
+            if(!formDigestValueResponse.success){
+                return formDigestValueResponse
+            }
+            try{
+                const url = `${context.pageContext.web.absoluteUrl}/_api/web/GetFolderByServerRelativeUrl('${linkToFile}')/ListItemAllFields`;
+                const headers = {
+                    'Content-Type': 'application/json',
+                    'X-RequestDigest': formDigestValueResponse.data,
+                    'IF-MATCH': '*', // Overwrite any changes (e.g., concurrency)
+                    'X-HTTP-Method': 'MERGE', // Use the MERGE method to update the item
+                }
+                const body = JSON.stringify({
+                    [columnName]: value
+                });
+
+                context.spHttpClient.post(url, SPHttpClient.configurations.v1, {
+                    headers: headers,
+                    body: body
+                })
+                .then((response: SPHttpClientResponse) => {
+                    if(response.ok) {
+                        resolve(this.buildResponse(true, 'Item updated'));
+                    }
+                    else {
+                    resolve(this.buildResponse(false, 'Item could not be updated.', '', response.statusText));
                     }
                 });
             }catch(error){

@@ -1,0 +1,158 @@
+@import '~@fluentui/react/dist/sass/References.scss';
+
+.vacancies-wrapper{
+  display:flex;
+  flex-wrap:wrap;
+  width:100%;
+  max-width:1000px;
+  gap:10px;
+}
+
+.vacancy-container {
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    border-radius: 6px;
+    border: 1px solid lightgray;
+    overflow: hidden;
+    width: 320px;
+    padding: 15px;
+    position: relative;
+    user-select: none;
+    gap:10px;
+  
+    .top-row-info {
+      display: flex;
+      flex-direction: row;
+      width: 100%;
+      justify-content: space-between;
+  
+      .alert-medal-box {
+        display: flex;
+        box-sizing: border-box;
+        padding: 4px 8px;
+        background-color: #fceef4;
+        color: #9d2b6b;
+        font-size: 12px;
+        font-weight: 600;
+        border-radius: 4px;
+        align-self: baseline;
+      }
+      .alert-medal-box-closed{
+        background-color: #fceef4;
+        color: #9d2b6b;
+      }
+      .alert-medal-box-closing{
+        background-color: #f7f1e6;
+        color: #b25d12;
+      }
+  
+      .option-menu-container {
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        margin-left:auto;
+  
+        .more-button {
+          display: flex;
+          box-sizing: border-box;
+          justify-content: center;
+          align-items: center;
+          padding: 10px;
+          font-size: 20px;
+          cursor: pointer;
+          border-radius: 6px;
+          transition: background-color 150ms linear;
+            &:hover{
+                background-color: #d8d7e7;
+            }
+        }
+  
+        .options {
+          display: flex;
+          border: 1px solid lightgray;
+          width: 150px;
+          position: absolute;
+          top: 45px;
+          left: -110px;
+          flex-direction: column;
+          border-radius: 6px;
+          overflow: hidden;
+          background-color: white;
+          z-index: 10;
+  
+          .button-option {
+            display: flex;
+            flex-direction: row;
+            width: 100%;
+            padding: 10px 10px;
+            box-sizing: border-box;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            transition: background-color 150ms linear;
+            &:hover{
+                background-color: #d8d7e7;
+            }
+          }
+          .button-option-link {
+            text-decoration: none;
+            color: initial;
+          }
+        }
+      }
+    }
+
+    .vacancy-details {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        .vacancy-title {
+          font-size: 20px;
+          font-weight: 600;
+          cursor: pointer; // Adding a cursor pointer to indicate clickability
+          &:hover{
+            text-decoration: underline;
+          }
+        }
+        .vacancy-total-applicants {
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+      
+          .item-count-bubble {
+            display: flex;
+            padding: 4px;
+            box-sizing: border-box;
+            justify-content: center;
+            align-items: center;
+            background-color: #eaeaea;
+            border-radius: 4px;
+            width: 27px;
+            height: 27px;
+          }
+        }
+      
+        .vacancy-closing-date {
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+      
+          .closing-date-bubble {
+            display: flex;
+            padding: 4px 8px;
+            box-sizing: border-box;
+            justify-content: center;
+            align-items: center;
+            background-color: #eaeaea;
+            border-radius: 4px;
+          }
+        }
+      
+        .created-date {
+          font-size: 10px;
+          color: gray;
+        }
+      }
+    
+  }

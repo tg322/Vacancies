@@ -1,52 +1,74 @@
 import * as React from 'react';
 import { useVacanciesContext } from '../context providers/VacanciesContextProvider';
-import { ArchiveRegular, DocumentPdfRegular, MoreVerticalFilled } from '@fluentui/react-icons';
+import { useEffect, useState } from 'react';
+import styles from './Vacancies.module.scss';
+import EditVacancyModal from './EditVacancyModal';
+import { useVacancyContext } from '../context providers/SingleVacancyContextProvider';
+import { IVacancyProps } from './IVacancyProps';
+import VacancyCard from './VacancyCard';
 
-interface IVacancyDisplayProps{
+export interface IVacancyDisplayProps{
     context: any;
 }
 
 function Vacancies(props: IVacancyDisplayProps){
 
-    const { vacancyState } = useVacanciesContext();
+    const[showModal, setShowModal] = useState<boolean>(false);
 
-    console.log(vacancyState.vacancies);
+    const[selectedKey, setSelectedKey] = useState<number>(-1);
+
+    const { vacancyState, vacancyDispatch } = useVacanciesContext();
+
+    const { singleVacancyState, singleVacancyDispatch } = useVacancyContext();
+
+
+
+    function editVacancy(vacancy:IVacancyProps, key:number){
+        singleVacancyDispatch({ type: 'ADD_TO_VACANCY', payload: vacancy })
+        setShowModal(true);
+        setSelectedKey(key);
+    }
+
+    function closeDialog(){
+        //issue: if I am setting anything on close in modal, this will overwrite the state when something might not have been confirmed...
+        if(singleVacancyState.vacancy){
+            vacancyDispatch({ type: 'REPLACE_VACANCY', payload: singleVacancyState.vacancy })
+        }
+        setShowModal(false);
+    }
+
+    useEffect(  () => {
+        if(vacancyState.vacancies){
+            console.log(vacancyState.vacancies)
+        }
+        
+    }, [vacancyState]);
+
+    function submitDialog() {
+        if(singleVacancyState.vacancy){
+            console.log('replacing vacancy...', singleVacancyState.vacancy)
+            vacancyDispatch({ type: 'REPLACE_VACANCY', payload: singleVacancyState.vacancy })
+        }
+        setShowModal(false);
+    }
 
     return(
-        <div style={{display:'flex', flexWrap:'wrap', width:'100%', maxWidth:'1000px', gap:'10px'}}>
+        <>
+
+        <div className={styles['vacancies-wrapper']}>
             {vacancyState.vacancies.length > 0 &&
-                vacancyState.vacancies.map((singleVacancy) => (
-                    <div style={{display:'flex', flexDirection:'column', boxSizing: 'border-box', borderRadius:'6px', border:'1px solid lightgray', overflow:'hidden', width:'320px', height:'400px', padding:'15px'}} key={singleVacancy.uniqueId}>
-                        <div id='top-row-info' style={{display:'flex', flexDirection:'row', width:'100%', justifyContent:'space-between'}}>
-                            <div id='alert-medal-box' style={{display:'flex', boxSizing:'border-box', padding:'4px 8px', backgroundColor:'#fceef4', color:'#9d2b6b', fontSize:'12px', fontWeight:'600', borderRadius:'4px', alignSelf: 'baseline'}}>
-                                <span>Expiring Soon</span>
-                            </div>
-
-                            <div id='option-menu-container' style={{display:'flex', flexDirection:'column', position:'relative'}}>
-                                <div id='more-button' style={{display:'flex', boxSizing:'border-box', justifyContent:'center', alignItems:'center', padding:'10px', fontSize:'20px'}}>
-                                    <MoreVerticalFilled/>
-                                </div>
-                                <div id='options' style={{display:'flex', border:'1px solid lightgray', width:'150px', position:'absolute', top:'40px', left:'-110px', flexDirection:'column', borderRadius:'6px'}}>
-
-                                    <div id='button-option' style={{display:"flex",flexDirection:"row",width:"100%",padding:"10px 10px",boxSizing:"border-box",alignItems:"center",gap:"5px"}}>
-                                        <DocumentPdfRegular style={{fontSize:'20px'}}/>
-                                        <span>View Pack</span>
-                                    </div>
-
-                                    <div id='button-option' style={{display:"flex",flexDirection:"row",width:"100%",padding:"10px 10px",boxSizing:"border-box",alignItems:"center",gap:"5px"}}>
-                                        <ArchiveRegular style={{fontSize:'20px'}}/>
-                                        <span>Archive Vacancy</span>
-                                    </div>
-
-                                </div>
-                            </div>
-
-
-                        </div>
-                    </div>  
-                ))  
+                vacancyState.vacancies.map((singleVacancy, key) => {
+                    return(
+                        
+                        <VacancyCard vacancy={singleVacancy} editVacancy={editVacancy}/>
+                        
+                    )})
             }
         </div>
+        
+        <EditVacancyModal context={props.context} openDialog={showModal} closeDialog={closeDialog} selectedVacancyKey={selectedKey} submitDialog={submitDialog}/>
+
+        </>
     );
 }
 

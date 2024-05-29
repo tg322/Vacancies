@@ -13,7 +13,8 @@ interface NavigationState {
 type Action =
   | { type: 'ADD_TO_PATH'; payload: string }
   | { type: 'REMOVE_FROM_PATH'; payload: string }
-  | { type: 'RESET_AND_ADD_TO_PATH'; payload: string };
+  | { type: 'RESET_AND_ADD_TO_PATH'; payload: string }
+  | { type: 'CHANGE_PATH'; payload: number }
 
 const initialState: NavigationState = { path: ['Vacancies'] };
 
@@ -29,6 +30,8 @@ const navigationReducer = (state: NavigationState, action: Action): NavigationSt
             return { ...state, path: state.path.filter((item) => item !== action.payload) };
         case 'RESET_AND_ADD_TO_PATH':
             return { ...state, path: [action.payload] };
+        case 'CHANGE_PATH':
+            return { ...state, path: state.path.splice(0, action.payload)  };
         default:
             return state;
     }

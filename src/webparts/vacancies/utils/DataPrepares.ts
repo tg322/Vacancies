@@ -6,9 +6,15 @@ export class Vacancy implements IVacancyProps{
         public uniqueId: number,
         public name: string,
         public originalName: string,
-        public closingDate: string,
+        public created: Date,
+        public closingDate: Date,
+        public formattedCreated: string,
+        public formattedClosingDate: string,
         public itemCount: number,
-        public fileData?: IFileDataProps,
+        public vacancyEditLink: string,
+        public archived: boolean,
+        public vacancyPack?: IFileDataProps,
+        public fileData?: IFileDataProps[],
         public accessibleTo?: INotifyProps[],
     ) { }
   }
@@ -48,44 +54,46 @@ export class PreparedData {
             for (const key of Object.keys(vacancyData)) {
                 const singleVacancy = vacancyData[Number(key)];
 
-                let vacancyFileData = undefined;
                 let notify = undefined;
+                let itemCount = singleVacancy.ItemCount;
 
                 if (singleVacancy.ListItemAllFields.NotifyId != null) {
-                    try {
-                        const userDetailsResponse = await this.dataHandler.getUserBySpId(context, singleVacancy.ListItemAllFields.NotifyId);
-                        if (!userDetailsResponse.success) {
-                            return userDetailsResponse;
-                        }
 
-                        notify = [];
-                        notify.push(new NotifyUsers(userDetailsResponse.data.Title, userDetailsResponse.data.Email));
+                    const notifyUsersResponse = await this.buildVacancyNotify(singleVacancy, context)
 
-                    } catch (error) {
-                        console.log(error);
+                    if(!notifyUsersResponse.success){
+                        return notifyUsersResponse
                     }
+
+                    notify = [];
+
+                    notify.push(notifyUsersResponse.data);
+                    
+                }
+                const folderEditLink = singleVacancy['@odata.editLink'];
+
+                const vacancyFileDataResponse = await this.buildVacancyFiles(folderEditLink, context)
+
+                if(!vacancyFileDataResponse.success){
+                    return vacancyFileDataResponse
                 }
 
-                try {
-                    const folderEditLink = singleVacancy['@odata.editLink'];
-                    const pdfFileResponse = await this.dataHandler.getFilesFromFolder(context, folderEditLink);
+                const vacancyFiles = vacancyFileDataResponse.data;
 
-                    if (!pdfFileResponse.success) {
-                        return pdfFileResponse;
-                    }
+                itemCount = itemCount -vacancyFiles.length;
 
-                    if (pdfFileResponse.data.value.length === 1) {
-                        vacancyFileData = new FileData(pdfFileResponse.data.value[0].Name, pdfFileResponse.data.value[0].ServerRelativeUrl, pdfFileResponse.data.value[0].TimeCreated);
-                    }
+                const createdDateObject = new Date(singleVacancy.ListItemAllFields.Created);
+                const formattedCreatedDateObject = this.formatDate(createdDateObject);
 
-                } catch (error) {
-                    console.log('An error occurred:', error);
+                const dateClosingObject = new Date(singleVacancy.ListItemAllFields.ClosingDate);
+                const formattedClosingDateObject = this.formatDate(dateClosingObject);
+
+                let archived = singleVacancy.ListItemAllFields.Archive;
+                if(archived === null){
+                    archived = false;
                 }
 
-                const dateObject = new Date(singleVacancy.ListItemAllFields.ClosingDate);
-                const formattedDateObject = this.formatDate(dateObject);
-
-                preparedVacancies.push(new Vacancy(singleVacancy.UniqueId, singleVacancy.Name.slice(0, singleVacancy.Name.indexOf('-')), singleVacancy.Name, formattedDateObject, singleVacancy.ItemCount, vacancyFileData, notify));
+                preparedVacancies.push(new Vacancy(singleVacancy.UniqueId, singleVacancy.Name.slice(0, singleVacancy.Name.indexOf('-')), singleVacancy.Name, createdDateObject, dateClosingObject, formattedCreatedDateObject, formattedClosingDateObject, itemCount,folderEditLink, archived, undefined, vacancyFiles, notify));
             }
 
         } catch (error) {
@@ -95,7 +103,30 @@ export class PreparedData {
         return this.dataHandler.buildResponse(true, 'Vacancies prepared successfully', preparedVacancies);
     }
 
-    private formatDate(dateObject: Date) {
+    async addFileToVacancy(context: any, file:FileList | File, vacancyName:string):Promise<BuildResponseType>{
+
+        let response = []
+
+        if(file instanceof FileList){
+            for (const key of Object.keys(file)) {
+                const singleFile = file[Number(key)];
+                let result = await this.dataHandler.uploadFileToSP(context, `${context.pageContext.web.absoluteUrl}`, singleFile, `Applications/${vacancyName}`, true, singleFile.name );
+
+                response.push(result.data);
+            }
+            return this.dataHandler.buildResponse(true, 'Vacancy Files Added.', response);
+        }else{
+            let result = await this.dataHandler.uploadFileToSP(context, `${context.pageContext.web.absoluteUrl}`, file, `Applications/${vacancyName}`, true, file.name );
+
+            response.push(result.data);
+
+            return this.dataHandler.buildResponse(true, 'Vacancy Files Added.', response);
+            
+        }
+        
+    }
+
+    public formatDate(dateObject: Date) {
         const yyyy = dateObject.getFullYear();
         let mm = dateObject.getMonth() + 1; // Months start at 0!
         let dd = dateObject.getDate();
@@ -105,6 +136,61 @@ export class PreparedData {
 
         return `${dd}/${mm}/${yyyy}`;
     }
+
+    public async buildVacancyNotify(singleVacancy:any, context:any): Promise<BuildResponseType>{
+
+        if (singleVacancy.ListItemAllFields.NotifyId != null) {
+            try {
+                const userDetailsResponse = await this.dataHandler.getUserBySpId(context, singleVacancy.ListItemAllFields.NotifyId);
+
+                if (!userDetailsResponse.success) {
+                    return userDetailsResponse;
+                }
+
+                const response = new NotifyUsers(userDetailsResponse.data.Title, userDetailsResponse.data.Email);
+
+                return this.dataHandler.buildResponse(true, 'Notify users added successfully.', response);
+
+            } catch (error) {
+                console.log(error);
+                return this.dataHandler.buildResponse(false, 'Failed to get Notify Users.','', error);
+            }
+        }
+
+        return this.dataHandler.buildResponse(true, 'Notify users added successfully.', undefined);
+
+    }
+
+    public async buildVacancyFiles(singleVacancyEditLink:string, context:any):Promise<BuildResponseType>{
+
+        let vacancyFilesData:IFileDataProps[]= [];
+
+        try {
+            
+            const pdfFileResponse = await this.dataHandler.getFilesFromFolder(context, singleVacancyEditLink);
+
+            if (!pdfFileResponse.success) {
+                return pdfFileResponse;
+            }
+
+            if (pdfFileResponse.data.value.length > 0) {
+                
+                //item count should only be total applicants, so because pdf files were found, this is also accounted for in the total item count so remove .length from the item count to take away the pdf file.
+                for (const key of Object.keys(pdfFileResponse.data.value)) {
+                    const singleFile = pdfFileResponse.data.value[Number(key)];
+                    vacancyFilesData.push(new FileData(singleFile.Name, singleFile.ServerRelativeUrl, singleFile.TimeCreated));
+                }
+            }
+
+        } catch (error) {
+            return this.dataHandler.buildResponse(false, 'Vacancy Files Failed', '', error);
+        }
+
+        return this.dataHandler.buildResponse(true, 'Vacancy Files Added.', vacancyFilesData);
+
+    }
+
+
 }
 
 

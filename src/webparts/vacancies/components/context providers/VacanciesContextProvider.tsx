@@ -15,7 +15,8 @@ type Action =
   | { type: 'ADD_TO_VACANCIES'; payload: IVacancyProps }
   | { type: 'BULK_ADD_TO_VACANCIES'; payload: IVacancyProps[] }
   | { type: 'REMOVE_FROM_VACANCIES'; payload: IVacancyProps }
-  | { type: 'RESET_VACANCIES'; };
+  | { type: 'RESET_VACANCIES'; }
+  | { type: 'REPLACE_VACANCY'; payload: IVacancyProps };
 
 const initialState: VacanciesState = { vacancies: [] };
 
@@ -33,6 +34,13 @@ const navigationReducer = (vacancyState: VacanciesState, action: Action): Vacanc
             return { ...vacancyState, vacancies: vacancyState.vacancies.filter((item) => item !== action.payload) };
         case 'RESET_VACANCIES':
             return { ...vacancyState, vacancies: [] };
+        case 'REPLACE_VACANCY':
+          return {
+            ...vacancyState,
+            vacancies: vacancyState.vacancies.map(vacancy =>
+              vacancy.uniqueId === action.payload.uniqueId ? action.payload : vacancy
+            ),
+          };
         default:
             return vacancyState;
     }

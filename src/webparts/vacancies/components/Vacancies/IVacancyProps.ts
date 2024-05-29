@@ -13,8 +13,14 @@ export interface IVacancyProps{
     uniqueId: number;
     name:string;
     originalName:string;
-    closingDate: string;
+    created: Date;
+    closingDate: Date;
+    formattedCreated: string;
+    formattedClosingDate: string;
     itemCount: number;
-    fileData?: IFileDataProps;
+    vacancyEditLink: string;
+    archived:boolean;
+    vacancyPack?: IFileDataProps;
+    fileData?: IFileDataProps[];
     accessibleTo?: INotifyProps[];
 }
