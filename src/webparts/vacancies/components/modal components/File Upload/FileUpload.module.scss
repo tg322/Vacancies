@@ -78,6 +78,10 @@
     box-sizing: border-box;
     padding: 10px;
     border-radius: 6px;
+    transition: background-color linear 120ms;
+    &:hover{
+        background-color: #c9c9c9;
+    }
     .uploaded-file-content-container {
         display: flex;
         flex-direction: row;
@@ -104,6 +108,10 @@
         .uploaded-file-name-wrapper span {
             text-overflow: ellipsis;
             overflow: hidden;
+            cursor:pointer;
+            &:hover{
+                text-decoration: underline;
+            }
         }
         .uploaded-file-delete-button{
             display:flex;
