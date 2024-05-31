@@ -32,6 +32,7 @@ function VacancyCard(props: IVacancyCardProps){
                                     <span>Closed</span>
                                 </div>
                             }
+                            
                             <div id='optionMenuContainer' className={styles['option-menu-container']}>
 
                                 <div id='moreButton' className={styles['more-button']} onClick={(e) => setShowOptions(!showOptions)}>

@@ -68,7 +68,7 @@ function VacancyDisplay(props: IVacancyDisplayProps){
     }, [state.path]);
 
     return(
-        <FluentProvider theme={webLightTheme}>
+        <FluentProvider theme={webLightTheme} style={{width:'100%'}}>
                 <div id="center-display" style={{ display: 'flex', flexDirection: 'row', gap: '20px', width: '100%', flexWrap: 'wrap', justifyContent: 'center', overflowY: 'scroll', overflow: 'hidden' }}>
                     {React.Children.map(props.children, (child) => {
                         if (React.isValidElement(child) && child.type === Vacancies && state.path.indexOf('Vacancies') !== -1 && state.path.length === 1) {

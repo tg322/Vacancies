@@ -11,7 +11,7 @@ function ContentScreen(props: IContentScreenProps){
     const { state } = useNavigationContext();
 
     return(
-        <div id='content-screen' style={{display:'flex', flexDirection:'column', height:'100%', width:'100%', alignItems:'center'}}>
+        <div id='content-screen' style={{display:'flex', flexDirection:'column', height:'100%', width:'100%', alignItems:'center', overflowY:'auto'}}>
         {React.Children.map(props.children, (child) => {
             // Check if the child is a valid React element and of the specific type
             if (React.isValidElement(child) && child.type === VacancyDisplay && state.path.indexOf('Vacancies') !=-1) {
