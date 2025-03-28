@@ -1,13 +1,13 @@
 import * as React from 'react';
 
-import { DataHandler } from '../../utils/Helpers';
+// import { DataHandler } from '../../utils/Helpers';
 import { useEffect, useState } from 'react';
 // import { IVacancyProps } from './IVacancyProps';
 import { PreparedData } from '../../utils/DataPrepares';
 import { useVacanciesContext } from '../context providers/VacanciesContextProvider'
 import { useNavigationContext } from '../context providers/NavigationContextProvider';
 import Vacancies from './Vacancies';
-import { FluentProvider, webLightTheme } from '@fluentui/react-components';
+import { FluentProvider, Spinner, SpinnerProps, webLightTheme } from '@fluentui/react-components';
 
 
 interface IVacancyDisplayProps{
@@ -15,73 +15,94 @@ interface IVacancyDisplayProps{
     children:React.ReactNode;
 }
 
-function VacancyDisplay(props: IVacancyDisplayProps){
+function VacancyDisplay(props: IVacancyDisplayProps, spinnerProps: Partial<SpinnerProps>){
 
-    const[fetchVacancies, setFetchVacancies] = useState<boolean>(false);
+    // const[fetchVacancies, setFetchVacancies] = useState<boolean>(false);
+    const [fetching, setFetching] = useState<boolean>(true);
 
     const { vacancyDispatch } = useVacanciesContext();
     const { state } = useNavigationContext();
 
-    const dataHandler = new DataHandler();
+    // const dataHandler = new DataHandler();
 
     const dataPrepares = new PreparedData();
 
-    async function getVacancies() {
+    async function getActiveVacancies() {
+        setFetching(true);
         try {
-            const preparedVacanciesResponse = await dataPrepares.prepareVacancies(props.context);
+            const preparedVacanciesResponse = await dataPrepares.getVacancies(props.context);
 
             if (!preparedVacanciesResponse.success) {
-                throw new Error('Failed to prepare vacancies: ' + JSON.stringify(preparedVacanciesResponse));
+                console.log(preparedVacanciesResponse);
+                throw new Error('Failed to prepare vacancies: ' + JSON.stringify(preparedVacanciesResponse.error));
+                
             }
+            console.log(preparedVacanciesResponse);
             vacancyDispatch({ type: 'RESET_VACANCIES' });
             vacancyDispatch({ type: 'BULK_ADD_TO_VACANCIES', payload: preparedVacanciesResponse.data });
+            setFetching(false);
         } catch (error) {
             console.error('An error occurred:', error);
         }
     }
 
+    async function getArchivedVacancies() {
+        setFetching(true);
+        try {
+            const preparedVacanciesResponse = await dataPrepares.getArchivedVacancies(props.context);
 
-    //amend this code to correctly utilise buildResponse objects and catch errors.
-    async function getVacancyChoices(){
-        try{
-        const list = await dataHandler.getSPList(props.context);
-        console.log(list.data.value[0].Choices);
-        }catch(error){
-        console.log(error);
+            if (!preparedVacanciesResponse.success) {
+                console.log(preparedVacanciesResponse);
+            }
+            vacancyDispatch({ type: 'RESET_VACANCIES' });
+            vacancyDispatch({ type: 'BULK_ADD_TO_VACANCIES', payload: preparedVacanciesResponse.data });
+            setFetching(false);
+        } catch (error) {
+            console.error('An error occurred:', error);
         }
     }
 
-    useEffect(  () => {
-        if(fetchVacancies){
-            getVacancyChoices();
-            getVacancies();
+    useEffect( () => {
+        if (state.path.indexOf('Vacancies') !=-1){
+            getActiveVacancies();
+        }else if(state.path.indexOf('Archive') !=-1){
+            getArchivedVacancies();
         }
+    }, [state]);
+
+    //possibly not needed...
+    // useEffect(() => {
+    //     if (state.path.indexOf('Vacancies') !=-1 && state.path.length === 1) {
+    //         setFetchVacancies(true);
+    //     } else {
+    //         setFetchVacancies(false);
+    //     }
+    // }, [state.path]);
+
+        return(
         
-    }, [fetchVacancies]);
-
-    useEffect(() => {
-        if (state.path.indexOf('Vacancies') !=-1 && state.path.length === 1) {
-            setFetchVacancies(true);
-        } else {
-            setFetchVacancies(false);
-        }
-    }, [state.path]);
-
-    return(
-        <FluentProvider theme={webLightTheme} style={{width:'100%'}}>
-                <div id="center-display" style={{ display: 'flex', flexDirection: 'row', gap: '20px', width: '100%', flexWrap: 'wrap', justifyContent: 'center', overflowY: 'scroll', overflow: 'hidden' }}>
+            <div id="center-display" style={{ display: 'flex', flexDirection: 'row', gap: '20px', width: '100%', height:'100%', flexWrap: 'wrap', justifyContent: 'center', overflowY: 'scroll', overflow: 'hidden', maxWidth:'1040px', padding:'10px 20px', boxSizing:'border-box' }}>
+                <FluentProvider theme={webLightTheme} style={{width:'100%'}}>
                     {React.Children.map(props.children, (child) => {
-                        if (React.isValidElement(child) && child.type === Vacancies && state.path.indexOf('Vacancies') !== -1 && state.path.length === 1) {
-                        return React.cloneElement(child, {
-                            context: props.context,
-                        } as IVacancyDisplayProps);
+                        if (React.isValidElement(child) && child.type === Vacancies) {
+                            if(!fetching){
+                                return React.cloneElement(child, {
+                                    context: props.context,
+                                } as IVacancyDisplayProps);
+                            }else{
+                                return(<div style={{display:'flex', flexDirection:'column', width:'100%', height:'100%', justifyContent:'center', alignItems:'center'}}>
+                                    <Spinner {...spinnerProps} label={'Loading Vacancies ...'} labelPosition='below'/>
+                                </div>);
+                            }
                         } else {
                         return null;
                         }
                     })}
-                </div>
-        </FluentProvider>
-    );
-}
+                </FluentProvider>
+            </div>
+    
+        );
+    
+    }
 
 export default VacancyDisplay

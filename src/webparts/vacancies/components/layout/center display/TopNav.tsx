@@ -14,9 +14,13 @@ function TopNav(){
                 
                 //if path is no the last item and not the first
                 if(key != state.path.length -1){
-                    return(<h3 style={{margin:'0px', fontWeight:'600', cursor:'pointer'}} key={key} onClick={() => dispatch({ type: 'CHANGE_PATH', payload: key +1 })}>{path}</h3>);
+                    return(<h3 style={{margin:'0px', fontWeight:'600', cursor:'pointer', userSelect:'none'}} key={key} onClick={() => dispatch({ type: 'CHANGE_PATH', payload: key +1 })}>{path}</h3>);
                 }else{
-                    return(<h3 style={{margin:'0px', fontWeight:'600'}} key={key}>{path}</h3>);
+                    let pathName = path;
+                    if(pathName.indexOf('-') != -1){
+                        pathName = pathName.slice(0, pathName.indexOf('-'));
+                    }
+                    return(<h3 style={{margin:'0px', fontWeight:'600', userSelect:'none'}} key={key}>{pathName}</h3>);
                 }
                 
                 

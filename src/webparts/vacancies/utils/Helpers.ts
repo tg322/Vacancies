@@ -366,7 +366,7 @@ export class DataHandler {
             }
     
                 try{
-                    const url = `${context.pageContext.web.absoluteUrl}/_api/web/getfolderbyserverrelativeurl('${libraryLocation}')/folders?$filter=Name ne 'Forms'&$expand=ListItemAllFields&$select=Name,UniqueId,ItemCount`;
+                    const url = `${context.pageContext.web.absoluteUrl}/_api/web/getfolderbyserverrelativeurl('${libraryLocation}')/folders?$filter=Name ne 'Forms'&$expand=ListItemAllFields&$select=Name,UniqueId,ItemCount`; //will need to make the url params modular.
                     const headers = {
                         'Content-Type': 'application/json;odata=verbose',
                         'X-RequestDigest': formDigestValueResponse.data
@@ -391,6 +391,48 @@ export class DataHandler {
         });
       
       }
+
+    async getFoldersFromSPUpdated(context: any, libraryLocation:string, {
+        filter = "Name ne 'Forms'",
+        expand = '',
+        select = ''
+    } = {}): Promise<BuildResponseType> {
+    const formDigestValueResponse = await this.getFormDigestValue(context, context.pageContext.web.absoluteUrl);
+
+
+    return new Promise(async (resolve, reject) => { 
+        
+
+        if(!formDigestValueResponse.success){
+            return formDigestValueResponse
+        }
+
+            try{
+                const url = `${context.pageContext.web.absoluteUrl}/_api/web/getfolderbyserverrelativeurl('${libraryLocation}')/folders?$filter=${encodeURIComponent(filter)}&$expand=${encodeURIComponent(expand)}&$select=${encodeURIComponent(select)}`; //will need to make the url params modular.
+                const headers = {
+                    'Content-Type': 'application/json;odata=verbose',
+                    'X-RequestDigest': formDigestValueResponse.data
+                };
+
+                context.spHttpClient.get(url, SPHttpClient.configurations.v1, {
+                    headers: headers
+                })
+                .then((response: SPHttpClientResponse) => {
+                    if(response.ok) {
+                    response.json().then((folders: any) => {
+                        resolve(this.buildResponse(true, 'Folders Retrieved', folders));
+                    });
+                    }
+                    else {
+                    resolve(this.buildResponse(false, 'Folders could not be retrieved.', '', response.statusText));
+                    }
+                });
+            }catch(error){
+                reject(this.buildResponse(false, 'An error occured.', '', error));
+            } 
+    });
+    
+    }
 
 
       async getUserBySpId(context: any, id:any): Promise<BuildResponseType> {

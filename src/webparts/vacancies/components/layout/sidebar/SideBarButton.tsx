@@ -6,17 +6,11 @@ import * as React from 'react';
 
 function SideBarButton(props: IButtonProps){
 
-    const { state, dispatch } = useNavigationContext();
-
-    // function handlePaths(){
-    //     resetPath();
-    //     addToPath(props.id);
-    // }
+    const { dispatch } = useNavigationContext();
 
     function handleClick() {
         
         dispatch({ type: 'RESET_AND_ADD_TO_PATH', payload: props.id});
-        console.log(state.path);
     }
     
     

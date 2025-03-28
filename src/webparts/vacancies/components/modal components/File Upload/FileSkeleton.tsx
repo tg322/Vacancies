@@ -1,5 +1,5 @@
 import * as React from 'react';
-import styles from '../FileUpload.module.scss';
+import styles from '../File Upload/FileUpload.module.scss';
 
 function FileSkeleton(){
 

@@ -1,7 +1,7 @@
 import { DocumentArrowUpRegular } from '@fluentui/react-icons';
 import * as React from 'react';
 import { useRef, useState } from 'react';
-import styles from '../FileUpload.module.scss';
+import styles from '../File Upload/FileUpload.module.scss';
 import { useVacancyContext } from '../../context providers/SingleVacancyContextProvider';
 import { PreparedData } from '../../../utils/DataPrepares';
 import { DataHandler } from '../../../utils/Helpers';
@@ -117,7 +117,7 @@ function FileUpload(props: IFileUploadProps){
     async function deleteFile(fileName:string){
         if(singleVacancyState.vacancy){
             try{
-                await dataHandler.deleteFileFromSP(props.context, props.context.pageContext.web.absoluteUrl, `/sites/Staff/Recruitment/Applications/${singleVacancyState.vacancy?.originalName}`,fileName);
+                await dataHandler.deleteFileFromSP(props.context, props.context.pageContext.web.absoluteUrl, `/sites/Staff/Recruitment/Applications/Vacancies/${singleVacancyState.vacancy?.originalName}`,fileName);
                 const filesResponse = await dataPrepares.buildVacancyFiles(singleVacancyState.vacancy.vacancyEditLink, props.context);
 
                     singleVacancyDispatch({
@@ -160,7 +160,7 @@ function FileUpload(props: IFileUploadProps){
             </div>
             <div id='uploaded-files-container' className={styles['uploaded-files-container']} >
                 <span>Files</span>
-                <div id='uploaded-files-container-scroll-zone' className={styles['uploaded-files-container-scroll-zone']}>
+                <div id='uploaded-files-container-scroll-zone' className={styles.uploadedFilesContainerScrollZone}>
                     {!uploading && singleVacancyState.vacancy?.fileData && singleVacancyState.vacancy?.fileData.map((file, key) => (
                         <FileComponent file={file} deleteFile={deleteFile} key={key}/>
                     ))}

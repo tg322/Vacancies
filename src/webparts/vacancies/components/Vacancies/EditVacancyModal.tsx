@@ -1,12 +1,11 @@
-
 import { Button, Checkbox, CheckboxOnChangeData, CheckboxProps, Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTrigger, Field, Input, Label } from '@fluentui/react-components';
 import * as React from 'react';
 import { ChangeEvent, useEffect, useState } from 'react';
 import { useVacancyContext } from '../context providers/SingleVacancyContextProvider';
-import { DatePicker } from '@fluentui/react';
 import FileUpload from '../modal components/File Upload/FileUpload';
 import { PreparedData } from '../../utils/DataPrepares';
 import { DataHandler } from '../../utils/Helpers';
+import { DatePicker } from '@fluentui/react-datepicker-compat';
 
 interface IEditVacancyModalProps{
     openDialog: boolean;
@@ -71,7 +70,7 @@ function EditVacancyModal(props:IEditVacancyModalProps, checkBoxProps: CheckboxP
                 updates.name = vacancyName;
                 updates.originalName = vacancyName + singleVacancyState.vacancy.originalName.slice(singleVacancyState.vacancy.originalName.indexOf('-'));
                 try{
-                    const response = await dataHandler.updateListItem(props.context, `/sites/Staff/Recruitment/Applications/${singleVacancyState.vacancy.originalName}`, 'FileLeafRef', vacancyName + singleVacancyState.vacancy.originalName.slice(singleVacancyState.vacancy.originalName.indexOf('-')));
+                    const response = await dataHandler.updateListItem(props.context, `/sites/Staff/Recruitment/Applications/Vacancies/${singleVacancyState.vacancy.originalName}`, 'FileLeafRef', vacancyName + singleVacancyState.vacancy.originalName.slice(singleVacancyState.vacancy.originalName.indexOf('-')));
 
                     console.log(response);
                 }catch(error){
@@ -82,7 +81,7 @@ function EditVacancyModal(props:IEditVacancyModalProps, checkBoxProps: CheckboxP
             if (archiveVacancyState !== undefined && archiveVacancyState !== singleVacancyState.vacancy.archived) {
                 updates.archived = archiveVacancyState;
                 try{
-                    const response = await dataHandler.updateListItem(props.context, `/sites/Staff/Recruitment/Applications/${singleVacancyState.vacancy.originalName}`, 'Archive', archiveVacancyState);
+                    const response = await dataHandler.updateListItem(props.context, `/sites/Staff/Recruitment/Applications/Vacancies/${singleVacancyState.vacancy.originalName}`, 'Archive', archiveVacancyState);
 
                     console.log(response);
                 }catch(error){
@@ -94,7 +93,7 @@ function EditVacancyModal(props:IEditVacancyModalProps, checkBoxProps: CheckboxP
                 updates.closingDate = selectedDate;
                 updates.formattedClosingDate = preparedData.formatDate(selectedDate);
                 try{
-                    const response = await dataHandler.updateListItem(props.context, `/sites/Staff/Recruitment/Applications/${singleVacancyState.vacancy.originalName}`, 'ClosingDate', selectedDate);
+                    const response = await dataHandler.updateListItem(props.context, `/sites/Staff/Recruitment/Applications/Vacancies/${singleVacancyState.vacancy.originalName}`, 'ClosingDate', selectedDate);
 
                     console.log(response);
                 }catch(error){
@@ -144,7 +143,7 @@ function EditVacancyModal(props:IEditVacancyModalProps, checkBoxProps: CheckboxP
                             <FileUpload context={props.context} />
                         </div>
                         <div style={{display:'flex', flexDirection:'column'}}>
-                            <Checkbox {...checkBoxProps} onChange={archiveVacancy} checked={archiveVacancyState} label='Archive Vacancy?'/>
+                            <Checkbox {...checkBoxProps} onChange={archiveVacancy} checked={archiveVacancyState} label="Archive Vacancy"/>
                         </div>
                     </DialogContent>
                     <DialogActions>

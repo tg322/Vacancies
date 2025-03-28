@@ -20,6 +20,7 @@ export interface IVacancyProps{
     itemCount: number;
     vacancyEditLink: string;
     archived:boolean;
+    status:string;
     vacancyPack?: IFileDataProps;
     fileData?: IFileDataProps[];
     accessibleTo?: INotifyProps[];

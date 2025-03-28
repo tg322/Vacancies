@@ -1,0 +1,97 @@
+@import '~@fluentui/react/dist/sass/References.scss';
+
+.table-row{
+    display:flex;
+    flex-direction:row;
+    width:100%;
+    box-sizing:border-box;
+    border-radius: 8px;
+    transition: background-color 200ms linear;
+    position:relative;
+    &:hover{
+        background-color:#f4f4f4;
+    }
+    .name-email-wrapper{
+        display:flex;
+        width:28%;
+        flex-direction:row;
+        gap:5px;
+        min-width:205px;
+        padding: 8px 8px 8px 18px;
+        .name-email-container{
+            display:flex;
+            flex-direction:column;
+            span:first-of-type{
+                font-weight:600;
+            }
+            span:last-of-type{
+                font-weight:600;
+                font-size:12px;
+                color:#a7a7a7;
+            }
+
+        }
+    
+    }
+    .applied-for-container{
+        display:flex;
+        width:22%;
+        align-items:center;
+        gap:10px;
+        padding:8px 8px;
+        .total-applied-for-container{
+            display:flex;
+            padding:4px 5px;
+            width:fit-content;
+            box-sizing:border-box;
+            border-radius:6px;
+            transition: background-color 200ms linear;
+            &:hover{
+                background-color:#dddddd;
+            }
+        }
+    }
+    .missing-data{
+        // background-color: #fff3d685;
+        color: #925500;
+        gap: 10px;
+        svg{
+            width:18px;
+            height:100%;
+        }
+    }
+    .tel-no-container{
+        display:flex;
+        width:22%;
+        align-items:center;
+        padding:8px 8px;
+    }
+    .status-container{
+        display:flex;
+        width:17%;
+        align-items:center;
+        padding:8px 8px;
+    }
+    .edit-delete-container{
+        display:flex;
+        width:12%;
+        align-items:center;
+        padding: 8px 18px 8px 8px;
+        .edit-delete-button-container{
+            width:34px;
+            height:34px;
+            border-radius:8px;
+            justify-content:center;
+            align-items:center;
+            display:flex;
+            transition: background-color 200ms linear;
+            &:hover{
+                background-color:#dddddd;
+            }
+            svg{
+                width:18px;
+                height:100%;
+            }
+        }
+    }
+}

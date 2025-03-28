@@ -1,5 +1,5 @@
 import * as React from 'react';
-import styles from '../FileUpload.module.scss';
+import styles from '../File Upload/FileUpload.module.scss';
 import { DismissRegular, DocumentPdfRegular } from '@fluentui/react-icons';
 import { IFileDataProps } from '../../Vacancies/IVacancyProps';
 
@@ -16,9 +16,12 @@ function FileComponent(props: IFileComponentProps){
                 <div id='uploaded-file-name-container' className={styles['uploaded-file-name-container']}>
                 <DocumentPdfRegular fontSize={30} style={{marginRight:'10px'}}/>
                 <a id='uploaded-file-name-wrapper' className={styles['uploaded-file-name-wrapper']} href={window.location.origin + props.file.serverRelativeUrl} target='_blank'>
-                    <span>{props.file.name.slice(0, props.file.name.lastIndexOf('.'))}</span>
+                    <div className={styles['uploaded-file-name-container']}>
+                        <span>{props.file.name.slice(0, props.file.name.lastIndexOf('.'))}</span>
+                    </div>
+                    <span style={{marginLeft:'5px'}}>{props.file.name.slice(props.file.name.lastIndexOf('.'))}</span>
                 </a>
-                <span style={{marginLeft:'5px'}}>{props.file.name.slice(props.file.name.lastIndexOf('.'))}</span>
+                
                 </div>
                 <div id='uploaded-file-delete-button' className={styles['uploaded-file-delete-button']} onClick={() => props.deleteFile(props.file.name)}>
                     <DismissRegular fontSize={20}/>

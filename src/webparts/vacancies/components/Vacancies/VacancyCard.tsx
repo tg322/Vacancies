@@ -15,21 +15,23 @@ function VacancyCard(props: IVacancyCardProps){
     const[showOptions, setShowOptions] = useState<boolean>(false);
     const { dispatch } = useNavigationContext();
 
-    const twoWeeksBeforeClosing = new Date(props.vacancy.closingDate.getTime() - 14 * 24 * 60 * 60 * 1000);
-
-    const today = new Date();
     return(
         <div id='vacancyContainer' className={styles['vacancy-container']}>
 
                         <div id='topRowInfo' className={styles['top-row-info']} >
-                            {today >= twoWeeksBeforeClosing && today < props.vacancy.closingDate && 
+                            {props.vacancy.status && props.vacancy.status === 'closing soon' &&
                                 <div id='alertMedalBox' className={`${styles['alert-medal-box']} ${styles['alert-medal-box-closing']}`} >
                                     <span>Closing Soon</span>
                                 </div>
                             }
-                            {today > props.vacancy.closingDate &&
+                            {props.vacancy.status && props.vacancy.status === 'closed' &&
                                 <div id='alertMedalBox' className={`${styles['alert-medal-box']} ${styles['alert-medal-box-closed']}`} >
                                     <span>Closed</span>
+                                </div>
+                            }
+                            {props.vacancy.status && props.vacancy.status === 'open' &&
+                                <div id='alertMedalBox' className={`${styles['alert-medal-box']} ${styles['alert-medal-box-open']}`} >
+                                    <span>Open</span>
                                 </div>
                             }
                             
